@@ -30,7 +30,6 @@ def run_prophet_forecasting(df):
 
     df_f = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].copy()
     df_f = df_f.merge(df, on='ds', how='left')
-    df_f.columns = ['Date', 'Real Sales', 'Predicted Sales', 'Lower Bound', 'Upper Bound']
 
     df_f['Date'] = df_f['Date'].dt.strftime('%Y/%m/%d')
     df_f['Real Sales'] = df_f['Real Sales'].round(2)
