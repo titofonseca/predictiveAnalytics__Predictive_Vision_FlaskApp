@@ -179,7 +179,7 @@ This section is about setting up the development environment on your local machi
 2. Clone the repository using the command:
 
     ```
-    git clone [YOUR_REPOSITORY_LINK]
+    git clone [https://github.com/titofonseca/predictiveAnalytics__UA-GA4-ProphetPrecisionVision.git]
     ```
 
 ### 4.2 Setting Up a Python Virtual Environment
