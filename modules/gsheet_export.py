@@ -1,17 +1,19 @@
 """
-Google Sheets Export Module
+Google Sheets Data Export Module
+-------------------------------
+Handles the process of exporting DataFrame content to Google Sheets, leveraging the gspread library for authentication and interactions with Google's Sheets API.
 
 Description:
-This module facilitates the process of exporting data to Google Sheets. It uses the gspread library to authenticate and interact with the Google Sheets API. The forecasted data from the Prophet model is exported to a specified Google Sheet, either updating an existing sheet or creating a new one if it doesn't exist.
+    This module is specifically designed to facilitate the export of forecasted data, particularly from the Prophet model, to Google Sheets. The functionality ensures that data is seamlessly updated in an existing sheet or, if necessary, a new sheet is created to accommodate the data.
 
 Dependencies:
-- gspread: The main library used to interact with Google Sheets.
-- oauth2client: Used for service account authentication.
-- gspread_dataframe: Helper library to export pandas DataFrames to Google Sheets.
-- json: For handling JSON data.
+    - gspread: Interface for Google Sheets operations.
+    - oauth2client: Authentication using service accounts.
+    - gspread_dataframe: Utility for transferring pandas DataFrame data to Google Sheets.
+    - json: JSON data processing.
 
 Main Functions:
-- export_to_gsheet(df_f, sheet_name="Prophet"): Exports a DataFrame to a specified Google Sheet. The sheet name defaults to "Prophet" but can be overridden. The function handles authentication, sheet creation or updating, and DataFrame export.
+    - export_to_gsheet(df_f, sheet_name="Prophet"): Manages the export of a DataFrame to a designated Google Sheet, handling authentication, sheet interactions, and data transfers.
 """
 
 import os
@@ -34,6 +36,9 @@ def export_to_gsheet(df_f, sheet_name="Prophet"):
             worksheet = spreadsheet.worksheet(sheet_name)
         except gspread.exceptions.WorksheetNotFound:
             worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="20")
+        
+        # Reorder the columns before exporting
+        df_f = df_f[['Date', 'Real Sales', 'Predicted Sales', 'Lower Bound', 'Upper Bound']]
         
         worksheet.clear()
         set_with_dataframe(worksheet, df_f, include_index=False, include_column_header=True, resize=True)
