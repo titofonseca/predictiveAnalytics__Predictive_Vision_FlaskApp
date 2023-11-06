@@ -43,7 +43,7 @@ def initialize_analyticsreporting():
     analytics = build('analyticsreporting', 'v4', credentials=credentials)
     return analytics
 
-def get_report(analytics):
+def get_report(analytics, metric="ga:transactionRevenue"):
     return analytics.reports().batchGet(
         body={
             'reportRequests': [
@@ -51,7 +51,7 @@ def get_report(analytics):
                     'viewId': View,
                     'dateRanges': [{'startDate': '2005-01-01', 'endDate': '2023-07-31'}],
                     'dimensions': [{'name': 'ga:date'}],
-                    'metrics': [{'expression': 'ga:transactionRevenue'}],
+                    'metrics': [{'expression': metric}],
                     "orderBys": [
                         {"fieldName": "ga:date", "sortOrder": "ASCENDING"}
                     ]
@@ -60,16 +60,17 @@ def get_report(analytics):
         }
     ).execute()
 
-def fetch_ua_data():
+def fetch_ua_data(metric="ga:transactionRevenue"):
     try:
         analytics = initialize_analyticsreporting()
-        response = get_report(analytics)
+        response = get_report(analytics, metric)
         finalRows = []
         for row in response.get('reports', [{}])[0].get('data', {}).get('rows', []):
             date = row['dimensions'][0]
-            revenue = float(row['metrics'][0]['values'][0])
-            finalRows.append({'ds': date, 'y': revenue})
+            value = float(row['metrics'][0]['values'][0])
+            finalRows.append({'ds': date, 'y': value})
         return pd.DataFrame(finalRows)
     except Exception as e:
         print(f"Error fetching data from UA: {e}")
         return None
+

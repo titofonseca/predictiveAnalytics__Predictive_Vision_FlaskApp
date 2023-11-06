@@ -26,7 +26,7 @@ import json
 Key = os.environ.get('GOOGLE_SERVICE_KEY_PATH')
 Google_Sheets_ID = os.environ.get('GOOGLE_SHEETS_ID')
 
-def export_to_gsheet(df_f, sheet_name="Prophet"):
+def export_to_gsheet(df_f, metric_name="Sales", sheet_name="Prophet"):
     """Export DataFrame to a specified Google Sheet."""
     try:
         gc = gspread.service_account(filename=Key)
@@ -38,7 +38,7 @@ def export_to_gsheet(df_f, sheet_name="Prophet"):
             worksheet = spreadsheet.add_worksheet(title=sheet_name, rows="1000", cols="20")
         
         # Reorder the columns before exporting
-        df_f = df_f[['Date', 'Real Sales', 'Predicted Sales', 'Lower Bound', 'Upper Bound']]
+        df_f = df_f[['Date', f'Real {metric_name}', f'Predicted {metric_name}', 'Lower Bound', 'Upper Bound']]
         
         worksheet.clear()
         set_with_dataframe(worksheet, df_f, include_index=False, include_column_header=True, resize=True)

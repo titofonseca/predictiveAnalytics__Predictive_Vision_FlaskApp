@@ -40,27 +40,28 @@ def initialize_analyticsreporting():
     client = BetaAnalyticsDataClient.from_service_account_info(service_account_info)
     return client
 
-def get_report(client):
+def get_report(client, metric="totalRevenue"):
     start_date = datetime(2023, 8, 1)
     days_ago = (datetime.now() - start_date).days
     request = RunReportRequest(
         property=f"properties/{Property}",
         date_ranges=[DateRange(start_date=f"{days_ago}daysAgo", end_date="yesterday")],
         dimensions=[Dimension(name="date")],
-        metrics=[Metric(name="totalRevenue")],
+        metrics=[Metric(name=metric)],
         keep_empty_rows=True
     )
     return client.run_report(request)
 
-def fetch_ga4_data():
+
+def fetch_ga4_data(metric="totalRevenue"):
     try:
         client = initialize_analyticsreporting()
-        response = get_report(client)
+        response = get_report(client, metric)
         finalRows = []
         for row in response.rows:
             date = row.dimension_values[0].value
-            revenue = float(row.metric_values[0].value)
-            finalRows.append({'ds': date, 'y': revenue})
+            value = float(row.metric_values[0].value)
+            finalRows.append({'ds': date, 'y': value})
         return pd.DataFrame(finalRows)
     except Exception as e:
         print(f"Error fetching data from GA4: {e}")

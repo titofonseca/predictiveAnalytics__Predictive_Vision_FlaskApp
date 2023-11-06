@@ -20,7 +20,7 @@ from prophet import Prophet
 import numpy as np
 import pandas as pd
 
-def run_prophet_forecasting(df):
+def run_prophet_forecasting(df, metric_name="Sales"):
     """Forecast time series data using Facebook's Prophet."""
     m = Prophet(interval_width=0.95, daily_seasonality=True, yearly_seasonality=True)
     m.fit(df)
@@ -29,11 +29,11 @@ def run_prophet_forecasting(df):
 
     df_f = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].copy()
     df_f = df_f.merge(df, on='ds', how='left')
-    df_f.columns = ['Date', 'Predicted Sales', 'Lower Bound', 'Upper Bound', 'Real Sales']
+    df_f.columns = ['Date', f'Predicted {metric_name}', f'Lower Bound', f'Upper Bound', f'Real {metric_name}']
 
     df_f['Date'] = df_f['Date'].dt.strftime('%Y/%m/%d')
-    df_f['Real Sales'] = df_f['Real Sales'].round(2)
-    df_f['Predicted Sales'] = df_f['Predicted Sales'].round(2)
+    df_f[f'Real {metric_name}'] = df_f[f'Real {metric_name}'].round(2)
+    df_f[f'Predicted {metric_name}'] = df_f[f'Predicted {metric_name}'].round(2)
     df_f['Lower Bound'] = df_f['Lower Bound'].round(2)
     df_f['Upper Bound'] = df_f['Upper Bound'].round(2)
 
